@@ -57,3 +57,18 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## GitHub Pages deployment
+
+This app can be deployed as a static Angular app with GitHub Pages.
+
+1. Push the repository to GitHub.
+2. In the repository settings, open **Pages**.
+3. Set **Build and deployment** to **GitHub Actions**.
+4. Push to `main` or run the **Deploy GitHub Pages** workflow manually.
+
+The workflow builds the app with the repository name as the base path, for example `/mahjong-companion/`. For a differently named repository, the workflow handles this automatically. For a local production build using this repository name, run:
+
+```bash
+npm run build:github
+```
