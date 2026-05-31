@@ -1,0 +1,176 @@
+<main class="app-shell">
+  @if (!game() && screen() === 'start') {
+    <section class="start-screen" aria-labelledby="start-title">
+      <div>
+        <p class="eyebrow">Mahjong Companion</p>
+        <h1 id="start-title">Ready for the next wind?</h1>
+      </div>
+
+      <button type="button" class="primary-button start-button" (click)="goToSetup()">
+        Start Game
+      </button>
+    </section>
+  } @else if (!game() && screen() === 'setup') {
+    <section class="setup-screen" aria-labelledby="setup-title">
+      <header class="screen-header">
+        <button type="button" class="icon-button" (click)="backToStart()" aria-label="Back to start">
+          ←
+        </button>
+        <div>
+          <p class="eyebrow">Setup Game</p>
+          <h1 id="setup-title">Choose your table</h1>
+        </div>
+      </header>
+
+      <div class="segmented-control" aria-label="Number of players">
+        <button
+          type="button"
+          [class.active]="playerCount() === 3"
+          (click)="setPlayerCount(3)"
+        >
+          3 Players
+        </button>
+        <button
+          type="button"
+          [class.active]="playerCount() === 4"
+          (click)="setPlayerCount(4)"
+        >
+          4 Players
+        </button>
+      </div>
+
+      <div class="setup-player-list">
+        @for (name of playerNames().slice(0, playerCount()); track $index) {
+          <label class="field">
+            <span>Player {{ $index + 1 }}</span>
+            <input
+              type="text"
+              [ngModel]="name"
+              (ngModelChange)="setPlayerName($index, $event)"
+            />
+          </label>
+        }
+      </div>
+
+      <button type="button" class="primary-button" (click)="startGame()">
+        Randomize East & begin
+      </button>
+    </section>
+  } @else if (game()?.status === 'playing') {
+    <section class="game-screen" aria-label="Current game">
+      <section class="player-grid" aria-label="Players">
+        @for (player of game()?.players ?? []; track player.id) {
+          <article class="player-panel" [class.east]="player.wind === 'E'">
+            <header class="player-panel-header">
+              @if (editingPlayerId() === player.id) {
+                <input
+                  class="player-name-input"
+                  type="text"
+                  [ngModel]="player.name"
+                  (ngModelChange)="updatePlayerName(player.id, $event)"
+                  (blur)="finishEditingPlayerName()"
+                  (keyup.enter)="finishEditingPlayerName()"
+                />
+              } @else {
+                <h2>{{ player.name }}</h2>
+                <button
+                  type="button"
+                  class="edit-button"
+                  (click)="startEditingPlayerName(player.id)"
+                  [attr.aria-label]="'Edit ' + player.name"
+                >
+                  ✎
+                </button>
+              }
+            </header>
+
+            <div class="player-panel-body">
+              <div>
+                <span class="panel-label">Score</span>
+                <strong>{{ player.points | number: '1.0-0' }}</strong>
+              </div>
+              <div class="wind-badge" [class.east]="player.wind === 'E'">
+                {{ player.wind }}
+              </div>
+            </div>
+          </article>
+        }
+      </section>
+
+      <section class="action-grid" aria-label="Game actions">
+        <button type="button" class="action-panel round-end-panel" (click)="openEndRound()">
+          <span>Round-End</span>
+          <strong>Enter points</strong>
+        </button>
+
+        <div class="action-panel menu-panel">
+          <span>Menu</span>
+          <strong>Round {{ game()?.roundNumber }} / {{ game()?.maxRounds }}</strong>
+          <button type="button" class="text-button" (click)="resetGame()">New game</button>
+        </div>
+      </section>
+
+      @if (screen() === 'endRound') {
+        <section class="modal-backdrop" aria-label="End round dialog">
+          <form class="end-round-panel" (ngSubmit)="submitRound()">
+            <header class="screen-header compact">
+              <div>
+                <p class="eyebrow">End Round</p>
+                <h1>Calculate result</h1>
+              </div>
+              <button type="button" class="icon-button" (click)="closeEndRound()" aria-label="Close end round">
+                ×
+              </button>
+            </header>
+
+            <label class="field">
+              <span>Who won Mahjong?</span>
+              <select [ngModel]="selectedWinnerId()" name="winner" (ngModelChange)="setWinner($event)">
+                <option value="none">No Mahjong</option>
+                @for (player of game()?.players ?? []; track player.id) {
+                  <option [value]="player.id">{{ player.name }}</option>
+                }
+              </select>
+            </label>
+
+            <div class="points-list">
+              @for (player of game()?.players ?? []; track player.id) {
+                <label class="field point-field">
+                  <span>{{ player.name }}</span>
+                  <input
+                    type="number"
+                    inputmode="numeric"
+                    [ngModel]="roundPoints()[player.id] ?? 0"
+                    name="points-{{ player.id }}"
+                    (ngModelChange)="setRoundPoint(player.id, $event)"
+                  />
+                </label>
+              }
+            </div>
+
+            <button type="submit" class="primary-button">Calculate</button>
+          </form>
+        </section>
+      }
+    </section>
+  } @else {
+    <section class="final-screen" aria-labelledby="final-title">
+      <p class="eyebrow">Game finished</p>
+      <h1 id="final-title">Winner: {{ leaderboard()[0]?.name }}</h1>
+
+      <div class="leaderboard">
+        @for (player of leaderboard(); track player.id; let rank = $index) {
+          <div class="leaderboard-row">
+            <span>#{{ rank + 1 }}</span>
+            <strong>{{ player.name }}</strong>
+            <span>{{ player.points | number: '1.0-0' }}</span>
+          </div>
+        }
+      </div>
+
+      <button type="button" class="primary-button" (click)="resetGame()">
+        Start new game
+      </button>
+    </section>
+  }
+</main>
