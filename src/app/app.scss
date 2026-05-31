@@ -177,6 +177,37 @@ h2 {
   gap: 9px;
 }
 
+.seating-note {
+  display: grid;
+  gap: 5px;
+  border: 1px solid rgba(31, 27, 22, 0.09);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 13px 14px;
+  box-shadow: 0 12px 32px rgba(31, 27, 22, 0.06);
+}
+
+.seating-note span {
+  color: rgba(31, 27, 22, 0.58);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.seating-note strong {
+  color: #1f1b16;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+.seating-note p {
+  color: rgba(31, 27, 22, 0.66);
+  font-size: 0.84rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
 .field {
   display: grid;
   gap: 7px;
@@ -460,6 +491,16 @@ input[type='number']::-webkit-inner-spin-button {
   .setup-screen,
   .game-screen {
     gap: 9px;
+  }
+
+  .seating-note {
+    gap: 4px;
+    border-radius: 18px;
+    padding: 11px 12px;
+  }
+
+  .seating-note p {
+    font-size: 0.8rem;
   }
 
   .player-grid {
