@@ -1,9 +1,8 @@
 <main class="app-shell">
   @if (!game() && screen() === 'start') {
     <section class="start-screen" aria-labelledby="start-title">
-      <div>
-        <p class="eyebrow">Mahjong Companion</p>
-        <h1 id="start-title">Ready for the next wind?</h1>
+      <div class="start-brand">
+        <h1 id="start-title">Mahjong Companion</h1>
       </div>
 
       <button type="button" class="primary-button start-button" (click)="goToSetup()">
@@ -17,8 +16,7 @@
           ←
         </button>
         <div>
-          <p class="eyebrow">Setup Game</p>
-          <h1 id="setup-title">Choose your table</h1>
+          <p class="eyebrow" id="setup-title">Setup Game</p>
         </div>
       </header>
 
@@ -45,6 +43,8 @@
             <span>Player {{ $index + 1 }}</span>
             <input
               type="text"
+              autocomplete="off"
+              enterkeyhint="done"
               [ngModel]="name"
               (ngModelChange)="setPlayerName($index, $event)"
             />
@@ -58,6 +58,12 @@
     </section>
   } @else if (game()?.status === 'playing') {
     <section class="game-screen" aria-label="Current game">
+      <section class="wind-rotation-indicator" aria-label="Wind rotation direction">
+        <span>Winds pass right</span>
+        <strong>{{ game()?.playerCount === 3 ? 'E → N → S → E' : 'E → N → W → S → E' }}</strong>
+        <span class="rotation-arrow" aria-hidden="true">↷</span>
+      </section>
+
       <section class="player-grid" aria-label="Players">
         @for (player of game()?.players ?? []; track player.id) {
           <article class="player-panel" [class.east]="player.wind === 'E'">
@@ -66,6 +72,8 @@
                 <input
                   class="player-name-input"
                   type="text"
+                  autocomplete="off"
+                  enterkeyhint="done"
                   [ngModel]="player.name"
                   (ngModelChange)="updatePlayerName(player.id, $event)"
                   (blur)="finishEditingPlayerName()"
@@ -133,13 +141,16 @@
               </select>
             </label>
 
-            <div class="points-list">
+            <div class="scoreline-list">
               @for (player of game()?.players ?? []; track player.id) {
-                <label class="field point-field">
+                <label class="scoreline-row">
                   <span>{{ player.name }}</span>
                   <input
-                    type="number"
+                    type="text"
                     inputmode="numeric"
+                    pattern="[0-9]*"
+                    autocomplete="off"
+                    enterkeyhint="done"
                     [ngModel]="roundPoints()[player.id] ?? 0"
                     name="points-{{ player.id }}"
                     (ngModelChange)="setRoundPoint(player.id, $event)"
