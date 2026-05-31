@@ -44,10 +44,7 @@
             ? 'Player 1 → Player 2 → Player 3 → Player 1'
             : 'Player 1 → Player 2 → Player 3 → Player 4 → Player 1' }}
         </strong>
-        <p>
-          Enter players in their real table order, following the wind rotation.
-          The default names are ready for a quick game.
-        </p>
+        <p>Enter players in real table order.</p>
       </section>
 
       <div class="setup-player-list">
@@ -71,12 +68,6 @@
     </section>
   } @else if (game()?.status === 'playing') {
     <section class="game-screen" aria-label="Current game">
-      <section class="wind-rotation-indicator" aria-label="Wind rotation direction">
-        <span>Winds pass right</span>
-        <strong>{{ game()?.playerCount === 3 ? 'E → N → S → E' : 'E → N → W → S → E' }}</strong>
-        <span class="rotation-arrow" aria-hidden="true">↷</span>
-      </section>
-
       <section class="player-grid" aria-label="Players">
         @for (player of game()?.players ?? []; track player.id) {
           <article class="player-panel" [class.east]="player.wind === 'E'">
