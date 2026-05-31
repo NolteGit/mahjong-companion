@@ -29,6 +29,7 @@ export type RoundInput = {
 };
 
 export type RoundResult = RoundInput & {
+  pointChangesByPlayerId: Record<string, number>;
   roundNumber: number;
   eastPlayerId: string;
   windRotated: boolean;

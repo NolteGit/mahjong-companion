@@ -6,6 +6,7 @@ import {
   RoundInput,
   windsByPlayerCount,
 } from './game.model';
+import { calculateRoundPointChanges } from './scoring';
 
 export function createGame(
   playerCount: PlayerCount,
@@ -44,12 +45,13 @@ export function applyRoundResult(game: Game, input: RoundInput): Game {
   }
 
   const eastPlayer = getCurrentEast(game);
+  const pointChangesByPlayerId = calculateRoundPointChanges(game, input);
   const eastWinsFirstTime =
     input.winnerPlayerId === eastPlayer.id && !eastPlayer.hasUsedEastRepeat;
 
   const playersWithPoints = game.players.map((player) => ({
     ...player,
-    points: player.points + (input.pointsByPlayerId[player.id] ?? 0),
+    points: player.points + pointChangesByPlayerId[player.id],
     hasUsedEastRepeat:
       player.id === eastPlayer.id && eastWinsFirstTime
         ? true
@@ -85,6 +87,7 @@ export function applyRoundResult(game: Game, input: RoundInput): Game {
       ...game.rounds,
       {
         ...input,
+        pointChangesByPlayerId,
         roundNumber: game.roundNumber,
         eastPlayerId: eastPlayer.id,
         windRotated: !eastWinsFirstTime,
