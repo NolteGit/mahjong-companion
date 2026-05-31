@@ -103,11 +103,11 @@
           <strong>Enter points</strong>
         </button>
 
-        <div class="action-panel menu-panel">
+        <button type="button" class="action-panel menu-panel" (click)="resetGame()">
           <span>Menu</span>
           <strong>Round {{ game()?.roundNumber }} / {{ game()?.maxRounds }}</strong>
-          <button type="button" class="text-button" (click)="resetGame()">New game</button>
-        </div>
+          <em>New game</em>
+        </button>
       </section>
 
       @if (screen() === 'endRound') {
