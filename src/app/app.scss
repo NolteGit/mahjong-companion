@@ -665,3 +665,105 @@ input[type='number']::-webkit-inner-spin-button {
   margin-bottom: 0;
 }
 
+
+
+.menu-panel {
+  cursor: default;
+}
+
+.menu-actions {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.menu-action {
+  width: 100%;
+  min-height: 36px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(31, 27, 22, 0.08);
+  color: #1f1b16;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-align: left;
+  touch-action: manipulation;
+}
+
+.menu-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.menu-action.danger {
+  color: #8a5d2a;
+}
+
+.review-panel {
+  gap: 15px;
+}
+
+.review-list {
+  display: grid;
+  gap: 8px;
+}
+
+.review-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 16px;
+  background: rgba(31, 27, 22, 0.05);
+  padding: 12px;
+}
+
+.review-row strong,
+.review-row span {
+  display: block;
+}
+
+.review-row span {
+  margin-top: 3px;
+  color: rgba(31, 27, 22, 0.58);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.review-delta {
+  flex: 0 0 auto;
+  min-width: 74px;
+  text-align: right;
+}
+
+.review-delta.positive {
+  color: #2f7a39;
+}
+
+.review-delta.negative {
+  color: #a8422b;
+}
+
+.review-actions {
+  display: grid;
+  grid-template-columns: 0.82fr 1.18fr;
+  gap: 10px;
+}
+
+@media (max-height: 760px) {
+  .menu-actions {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .menu-action {
+    min-height: 32px;
+    padding: 7px 9px;
+  }
+
+  .review-row {
+    padding: 10px;
+  }
+}

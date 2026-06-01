@@ -137,11 +137,18 @@
           <strong>Enter points</strong>
         </button>
 
-        <button type="button" class="action-panel menu-panel" (click)="resetGame()">
+        <section class="action-panel menu-panel">
           <span>Menu</span>
           <strong>Round {{ game()?.roundNumber }} / {{ game()?.maxRounds }}</strong>
-          <em>New game</em>
-        </button>
+          <div class="menu-actions">
+            <button type="button" class="menu-action" [disabled]="!canUndo()" (click)="undoLastRound()">
+              Undo last round
+            </button>
+            <button type="button" class="menu-action danger" (click)="resetGame()">
+              New game
+            </button>
+          </div>
+        </section>
       </section>
 
       @if (screen() === 'endRound') {
@@ -187,6 +194,45 @@
 
             <button type="submit" class="primary-button">Calculate</button>
           </form>
+        </section>
+      }
+
+      @if (screen() === 'roundReview') {
+        <section class="modal-backdrop" aria-label="Review round result dialog">
+          <section class="end-round-panel review-panel">
+            <header class="screen-header compact">
+              <div>
+                <p class="eyebrow">Review Result</p>
+                <h1>Apply changes?</h1>
+              </div>
+              <button type="button" class="icon-button" (click)="backToRoundInput()" aria-label="Back to score input">
+                ←
+              </button>
+            </header>
+
+            <div class="review-list">
+              @for (row of roundReviewRows(); track row.id) {
+                <div class="review-row">
+                  <div>
+                    <strong>{{ row.name }}</strong>
+                    <span>{{ row.before | number: '1.0-0' }} → {{ row.after | number: '1.0-0' }}</span>
+                  </div>
+                  <strong
+                    class="review-delta"
+                    [class.positive]="row.delta > 0"
+                    [class.negative]="row.delta < 0"
+                  >
+                    {{ row.delta > 0 ? '+' : '' }}{{ row.delta | number: '1.0-0' }}
+                  </strong>
+                </div>
+              }
+            </div>
+
+            <div class="review-actions">
+              <button type="button" class="secondary-button" (click)="backToRoundInput()">Back</button>
+              <button type="button" class="primary-button" (click)="applyReviewedRound()">Apply result</button>
+            </div>
+          </section>
         </section>
       }
     </section>

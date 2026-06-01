@@ -5,8 +5,9 @@ import { applyRoundResult, createGame, getCurrentEast } from './core/game-engine
 import { defaultPlayerNames, Game, PlayerCount, RoundInput } from './core/game.model';
 
 const storageKey = 'mahjong-companion-game-v1';
+const undoStorageKey = 'mahjong-companion-undo-v1';
 
-type AppScreen = 'start' | 'setup' | 'game' | 'endRound';
+type AppScreen = 'start' | 'setup' | 'game' | 'endRound' | 'roundReview';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,8 @@ export class App {
   screen = signal<AppScreen>(this.game() ? 'game' : 'start');
   selectedWinnerId = signal<string>('none');
   roundPoints = signal<Partial<Record<string, number>>>({});
+  pendingGame = signal<Game | null>(null);
+  undoGame = signal<Game | null>(loadUndoGame());
   editingPlayerId = signal<string | null>(null);
 
   currentEast = computed(() => {
@@ -37,6 +40,30 @@ export class App {
   selectedEastName = computed(() =>
     this.playerNames()[this.selectedEastIndex()] ?? `Player ${this.selectedEastIndex() + 1}`,
   );
+
+  canUndo = computed(() => Boolean(this.game() && this.undoGame()));
+
+  roundReviewRows = computed(() => {
+    const game = this.game();
+    const pendingGame = this.pendingGame();
+
+    if (!game || !pendingGame) {
+      return [];
+    }
+
+    return game.players.map((player) => {
+      const nextPlayer = pendingGame.players.find((candidate) => candidate.id === player.id);
+      const nextPoints = nextPlayer?.points ?? player.points;
+
+      return {
+        id: player.id,
+        name: player.name,
+        before: player.points,
+        after: nextPoints,
+        delta: nextPoints - player.points,
+      };
+    });
+  });
 
   goToSetup(): void {
     this.screen.set('setup');
@@ -79,6 +106,7 @@ export class App {
     this.game.set(game);
     this.screen.set('game');
     this.resetRoundInput(game);
+    this.clearUndoGame();
     saveGame(game);
   }
 
@@ -89,12 +117,19 @@ export class App {
       return;
     }
 
+    this.pendingGame.set(null);
     this.resetRoundInput(game);
     this.screen.set('endRound');
   }
 
   closeEndRound(): void {
+    this.pendingGame.set(null);
     this.screen.set('game');
+  }
+
+  backToRoundInput(): void {
+    this.pendingGame.set(null);
+    this.screen.set('endRound');
   }
 
   setWinner(value: string): void {
@@ -128,10 +163,40 @@ export class App {
     };
 
     const nextGame = applyRoundResult(game, input);
+    this.pendingGame.set(nextGame);
+    this.screen.set('roundReview');
+  }
+
+  applyReviewedRound(): void {
+    const game = this.game();
+    const nextGame = this.pendingGame();
+
+    if (!game || !nextGame) {
+      return;
+    }
+
+    this.undoGame.set(game);
+    saveUndoGame(game);
     this.game.set(nextGame);
+    this.pendingGame.set(null);
     this.resetRoundInput(nextGame);
     this.screen.set('game');
     saveGame(nextGame);
+  }
+
+  undoLastRound(): void {
+    const undoGame = this.undoGame();
+
+    if (!undoGame) {
+      return;
+    }
+
+    this.game.set(undoGame);
+    this.pendingGame.set(null);
+    this.resetRoundInput(undoGame);
+    this.screen.set('game');
+    saveGame(undoGame);
+    this.clearUndoGame();
   }
 
   startEditingPlayerName(playerId: string): void {
@@ -167,8 +232,15 @@ export class App {
     this.screen.set('start');
     this.selectedWinnerId.set('none');
     this.roundPoints.set({});
+    this.pendingGame.set(null);
     this.editingPlayerId.set(null);
+    this.clearUndoGame();
     localStorage.removeItem(storageKey);
+  }
+
+  private clearUndoGame(): void {
+    this.undoGame.set(null);
+    localStorage.removeItem(undoStorageKey);
   }
 
   private resetRoundInput(game: Game): void {
@@ -200,6 +272,29 @@ function loadGame(): Game | null {
 
 function saveGame(game: Game): void {
   localStorage.setItem(storageKey, JSON.stringify(game));
+}
+
+function loadUndoGame(): Game | null {
+  if (typeof localStorage === 'undefined') {
+    return null;
+  }
+
+  const rawGame = localStorage.getItem(undoStorageKey);
+
+  if (!rawGame) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(rawGame) as Game;
+  } catch {
+    localStorage.removeItem(undoStorageKey);
+    return null;
+  }
+}
+
+function saveUndoGame(game: Game): void {
+  localStorage.setItem(undoStorageKey, JSON.stringify(game));
 }
 
 function randomIndex(length: number): number {
