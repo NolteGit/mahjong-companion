@@ -92,6 +92,7 @@ h2 {
 }
 
 .primary-button,
+.secondary-button,
 .icon-button,
 .edit-button,
 .segmented-control button,
@@ -101,22 +102,35 @@ h2 {
   touch-action: manipulation;
 }
 
+.primary-button,
+.secondary-button {
+  border: 0;
+  color: inherit;
+  font-weight: 900;
+}
+
 .primary-button {
   width: 100%;
   min-height: 64px;
-  border: 0;
   border-radius: 24px;
   background: #1f1b16;
   color: #fff;
   padding: 16px 18px;
   font-size: 1rem;
-  font-weight: 900;
   box-shadow: 0 16px 36px rgba(31, 27, 22, 0.12);
 }
 
 .start-button {
   min-height: 72px;
   font-size: 1.08rem;
+}
+
+.secondary-button {
+  min-height: 44px;
+  border-radius: 999px;
+  background: rgba(31, 27, 22, 0.08);
+  padding: 10px 14px;
+  font-size: 0.86rem;
 }
 
 .icon-button,
@@ -206,6 +220,85 @@ h2 {
   font-size: 0.84rem;
   font-weight: 750;
   line-height: 1.35;
+}
+
+.east-selector {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(31, 27, 22, 0.09);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 13px 14px;
+  box-shadow: 0 12px 32px rgba(31, 27, 22, 0.06);
+}
+
+.east-selector header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.east-selector header span,
+.east-player-button span {
+  display: block;
+  color: rgba(31, 27, 22, 0.58);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.east-selector header strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 1rem;
+  line-height: 1.15;
+}
+
+.east-player-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.east-player-button {
+  display: grid;
+  gap: 4px;
+  min-height: 62px;
+  border: 1px solid rgba(31, 27, 22, 0.09);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.7);
+  color: inherit;
+  padding: 11px 12px;
+  text-align: left;
+  font: inherit;
+  touch-action: manipulation;
+}
+
+.east-player-button strong {
+  overflow: hidden;
+  font-size: 0.95rem;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.east-player-button.active {
+  border-color: rgba(138, 93, 42, 0.55);
+  background: #fff6df;
+  box-shadow: inset 0 0 0 1px rgba(138, 93, 42, 0.16);
+}
+
+.east-player-button.active::after {
+  content: 'East';
+  justify-self: start;
+  border-radius: 999px;
+  background: #8a5d2a;
+  color: #fff;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  font-weight: 950;
 }
 
 .field {
@@ -493,14 +586,20 @@ input[type='number']::-webkit-inner-spin-button {
     gap: 9px;
   }
 
-  .seating-note {
-    gap: 4px;
+  .seating-note,
+  .east-selector {
+    gap: 8px;
     border-radius: 18px;
     padding: 11px 12px;
   }
 
   .seating-note p {
     font-size: 0.8rem;
+  }
+
+  .east-player-button {
+    min-height: 56px;
+    padding: 10px;
   }
 
   .player-grid {

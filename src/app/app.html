@@ -39,7 +39,7 @@
 
       <section class="seating-note" aria-label="Seating order note">
         <span>Seating order matters</span>
-        <p>Enter players in real table order. Each next player should be seated to the right of the previous one.</p>
+        <p>Enter players in real table order.</p>
        </section>
 
       <div class="setup-player-list">
@@ -57,8 +57,35 @@
         }
       </div>
 
+      <section class="east-selector" aria-label="Starting East selection">
+        <header>
+          <div>
+            <span>Starting East</span>
+            <strong>{{ selectedEastName() }}</strong>
+          </div>
+
+          <button type="button" class="secondary-button" (click)="randomizeStartingEast()">
+            Randomize
+          </button>
+        </header>
+
+        <div class="east-player-grid">
+          @for (name of playerNames().slice(0, playerCount()); track $index) {
+            <button
+              type="button"
+              class="east-player-button"
+              [class.active]="selectedEastIndex() === $index"
+              (click)="setStartingEast($index)"
+            >
+              <span>Player {{ $index + 1 }}</span>
+              <strong>{{ name }}</strong>
+            </button>
+          }
+        </div>
+      </section>
+
       <button type="button" class="primary-button" (click)="startGame()">
-        Randomize East & begin
+        Begin game
       </button>
     </section>
   } @else if (game()?.status === 'playing') {

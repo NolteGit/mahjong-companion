@@ -17,6 +17,7 @@ type AppScreen = 'start' | 'setup' | 'game' | 'endRound';
 export class App {
   playerCount = signal<PlayerCount>(4);
   playerNames = signal<string[]>([...defaultPlayerNames]);
+  selectedEastIndex = signal<number>(randomIndex(4));
   game = signal<Game | null>(loadGame());
   screen = signal<AppScreen>(this.game() ? 'game' : 'start');
   selectedWinnerId = signal<string>('none');
@@ -33,6 +34,10 @@ export class App {
     return game ? [...game.players].sort((a, b) => b.points - a.points) : [];
   });
 
+  selectedEastName = computed(() =>
+    this.playerNames()[this.selectedEastIndex()] ?? `Player ${this.selectedEastIndex() + 1}`,
+  );
+
   goToSetup(): void {
     this.screen.set('setup');
   }
@@ -43,6 +48,18 @@ export class App {
 
   setPlayerCount(playerCount: PlayerCount): void {
     this.playerCount.set(playerCount);
+
+    if (this.selectedEastIndex() >= playerCount) {
+      this.selectedEastIndex.set(0);
+    }
+  }
+
+  setStartingEast(index: number): void {
+    this.selectedEastIndex.set(index);
+  }
+
+  randomizeStartingEast(): void {
+    this.selectedEastIndex.set(randomIndex(this.playerCount()));
   }
 
   setPlayerName(index: number, value: string): void {
@@ -54,7 +71,11 @@ export class App {
   }
 
   startGame(): void {
-    const game = createGame(this.playerCount(), this.playerNames());
+    const game = createGame(
+      this.playerCount(),
+      this.playerNames(),
+      this.selectedEastIndex(),
+    );
     this.game.set(game);
     this.screen.set('game');
     this.resetRoundInput(game);
@@ -179,4 +200,8 @@ function loadGame(): Game | null {
 
 function saveGame(game: Game): void {
   localStorage.setItem(storageKey, JSON.stringify(game));
+}
+
+function randomIndex(length: number): number {
+  return Math.floor(Math.random() * length);
 }
